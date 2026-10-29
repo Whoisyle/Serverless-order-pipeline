@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 
 namespace OrderPipeline.Core;
@@ -122,18 +123,38 @@ public static class OrderRules
 
 public sealed class InvalidTransitionException(string message) : Exception(message);
 
+// Explicit JsonPropertyName on every property: the wire format (contracts/order.schema.json
+// and every fixture) is camelCase, System.Text.Json is case-sensitive by default, and relying
+// on a host-level PropertyNameCaseInsensitive setting would make this model's correctness
+// depend on configuration that lives somewhere else. OrderPipeline.Tests also sets
+// PropertyNameCaseInsensitive=true when loading fixtures directly, which still works fine
+// alongside these attributes -- explicit attributes always take precedence.
 public sealed class OrderItem
 {
+    [JsonPropertyName("sku")]
     public string Sku { get; set; } = "";
+
+    [JsonPropertyName("quantity")]
     public int Quantity { get; set; }
+
+    [JsonPropertyName("unitPrice")]
     public double UnitPrice { get; set; }
 }
 
 public sealed class Order
 {
+    [JsonPropertyName("orderId")]
     public string OrderId { get; set; } = "";
+
+    [JsonPropertyName("customerId")]
     public string CustomerId { get; set; } = "";
+
+    [JsonPropertyName("items")]
     public List<OrderItem>? Items { get; set; }
+
+    [JsonPropertyName("total")]
     public double Total { get; set; }
+
+    [JsonPropertyName("currency")]
     public string? Currency { get; set; }
 }

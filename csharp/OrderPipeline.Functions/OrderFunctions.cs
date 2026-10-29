@@ -42,17 +42,17 @@ public sealed class OrderFunctions(OrderStore store, ILogger<OrderFunctions> log
         [ServiceBusTrigger("orders", "validation", Connection = "ServiceBusConnection")] ServiceBusReceivedMessage message)
     {
         var order = message.Body.ToObjectFromJson<Order>();
-        var errors = OrderRules.Validate(order);
 
         // A malformed message with no orderId can't be tracked in Cosmos, so it
         // is logged and dropped (not retried) rather than throwing, which would
         // make Service Bus redeliver it forever.
-        if (string.IsNullOrWhiteSpace(order?.OrderId))
+        if (order is null || string.IsNullOrWhiteSpace(order.OrderId))
         {
-            log.LogError("dropping order message with no orderId: errors={Errors}", string.Join("; ", errors));
+            log.LogError("dropping order message with no orderId: errors={Errors}", string.Join("; ", OrderRules.Validate(order)));
             return;
         }
 
+        var errors = OrderRules.Validate(order);
         if (errors.Count > 0)
         {
             log.LogInformation("order {OrderId} rejected: {Errors}", order.OrderId, string.Join("; ", errors));

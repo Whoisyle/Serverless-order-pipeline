@@ -4,6 +4,7 @@ using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using OrderPipeline.Functions;
 
 // UNVERIFIED (see OrderPipeline.Functions.csproj).
 var host = new HostBuilder()
