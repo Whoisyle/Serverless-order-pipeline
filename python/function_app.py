@@ -103,8 +103,17 @@ def intake(req: func.HttpRequest) -> func.HttpResponse:
 def validate(msg: func.ServiceBusMessage) -> None:
     order = json.loads(msg.get_body().decode("utf-8"))
     errors = validate_order(order)
+
+    # A malformed message with no orderId can't be tracked in Cosmos, so it is
+    # logged and dropped (not retried) rather than raising, which would make
+    # Service Bus redeliver it forever.
+    order_id = order.get("orderId") if isinstance(order, dict) else None
+    if not order_id:
+        log.error("dropping order message with no orderId: errors=%s body=%r", errors, order)
+        return
+
     if errors:
-        log.info("order %s rejected: %s", order.get("orderId"), errors)
+        log.info("order %s rejected: %s", order_id, errors)
         _move(order, Status.REJECTED, reason="; ".join(errors))
         return
     _move(order, Status.VALIDATED)

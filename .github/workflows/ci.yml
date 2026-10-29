@@ -36,7 +36,7 @@ jobs:
       - run: npm ci
       - run: npm test
 
-  csharp-core:
+  csharp:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -44,6 +44,9 @@ jobs:
         with:
           dotnet-version: "8.0.x"
       - run: dotnet run --project csharp/OrderPipeline.Tests
+      # The Functions host needs NuGet packages that were unreachable in the
+      # environment it was written in, so this is its first real build check.
+      - run: dotnet build csharp/OrderPipeline.Functions
 
   terraform:
     runs-on: ubuntu-latest

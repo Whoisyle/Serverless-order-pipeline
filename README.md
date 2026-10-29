@@ -63,8 +63,9 @@ dotnet run --project csharp/OrderPipeline.Tests
 
 1. Copy `infra/terraform/terraform.tfvars.example` to `terraform.tfvars` and set `name_suffix` to something globally unique.
 2. From `infra/terraform`: `terraform init && terraform plan && terraform apply`.
-3. Deploy the chosen implementation to the Function App named in the Terraform outputs — `func azure functionapp publish` for Python or TypeScript, or a zip deploy for C#.
-4. Test with `POST https://<intake_hostname>/api/orders`, body matching `contracts/fixtures/valid-order.json`, and the function key.
+3. For local testing first, copy the chosen implementation's `local.settings.json.example` to `local.settings.json` and fill in the Service Bus namespace and Cosmos endpoint from the Terraform outputs.
+4. Deploy the chosen implementation to the Function App named in the Terraform outputs — `func azure functionapp publish` for Python or TypeScript, or a zip deploy for C#.
+5. Test with `POST https://<intake_hostname>/api/orders`, body matching `contracts/fixtures/valid-order.json`, and the function key.
 
 No Azure subscription has been attached to this project yet, so nothing above has been deployed or run against real Azure resources.
 

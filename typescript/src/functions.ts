@@ -96,14 +96,23 @@ app.serviceBusTopic("validation", {
   subscriptionName: "validation",
   connection: "ServiceBusConnection",
   handler: async (message: unknown, context: InvocationContext): Promise<void> => {
-    const order = message as Order;
+    const order = message as Partial<Order>;
     const errors = validateOrder(order);
-    if (errors.length > 0) {
-      context.log(`order ${order.orderId} rejected: ${errors.join("; ")}`);
-      await move(order, Status.Rejected, errors.join("; "));
+
+    // A malformed message with no orderId can't be tracked in Cosmos, so it is
+    // logged and dropped (not retried) rather than throwing, which would make
+    // Service Bus redeliver it forever.
+    if (!order?.orderId) {
+      context.error(`dropping order message with no orderId: errors=${errors.join("; ")}`);
       return;
     }
-    await move(order, Status.Validated);
+
+    if (errors.length > 0) {
+      context.log(`order ${order.orderId} rejected: ${errors.join("; ")}`);
+      await move(order as Order, Status.Rejected, errors.join("; "));
+      return;
+    }
+    await move(order as Order, Status.Validated);
     await send("payments", order);
   },
 });

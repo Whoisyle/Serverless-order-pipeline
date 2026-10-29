@@ -36,6 +36,7 @@ Illegal transitions raise an error in every implementation, so a message redeliv
 
 - **Payment declines** raise an error inside the trigger. Service Bus redelivers the message until `max_delivery_count` (5 by default, see Terraform) is reached, then moves it to the dead-letter queue. The payment stage also stops retrying itself after 3 deliveries and marks the order `dead_lettered`.
 - **Invalid orders** are recorded as `rejected` and not retried. They are not errors, so they do not clog the queue.
+- **Malformed messages with no `orderId`** (not just a failed validation, but a message that cannot be matched to any order) are logged and dropped rather than retried. There is nothing to key a Cosmos write on, so raising here would make Service Bus redeliver a message that can never succeed. This can't happen in normal operation, since `intake` only publishes orders that already have an `orderId`, but all three handlers guard against it defensively.
 - **Duplicate messages** are safe because each write is an upsert keyed by `orderId`, and transitions are checked against the stored state.
 
 ## Identity and secrets
