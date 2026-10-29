@@ -1,0 +1,9 @@
+# Copy to terraform.tfvars and adjust. name_suffix must make resource names globally unique.
+project     = "orderpipe"
+environment = "dev"
+location    = "southafricanorth"
+runtime     = "python"
+name_suffix = "a1b2"
+tags = {
+  owner = "whoisyle"
+}

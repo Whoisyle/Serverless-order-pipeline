@@ -1,0 +1,7 @@
+{
+  "orderId": "ord-1002",
+  "customerId": "cust-42",
+  "items": [{ "sku": "BOOK-1", "quantity": 2, "unitPrice": 150.0 }],
+  "total": 999.0,
+  "currency": "ZAR"
+}

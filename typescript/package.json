@@ -1,0 +1,22 @@
+{
+  "name": "order-pipeline",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Order pipeline on Azure Functions (TypeScript): shared rules, triggers, and tests",
+  "main": "dist/src/functions.js",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "npm run build && node --test dist/test/core.test.js"
+  },
+  "dependencies": {
+    "@azure/cosmos": "^4.0.0",
+    "@azure/functions": "^4.5.0",
+    "@azure/identity": "^4.4.0",
+    "@azure/service-bus": "^7.9.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.5.0"
+  }
+}

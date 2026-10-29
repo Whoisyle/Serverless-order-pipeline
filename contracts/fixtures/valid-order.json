@@ -1,0 +1,10 @@
+{
+  "orderId": "ord-1001",
+  "customerId": "cust-42",
+  "items": [
+    { "sku": "BOOK-1", "quantity": 2, "unitPrice": 150.0 },
+    { "sku": "PEN-9", "quantity": 1, "unitPrice": 25.5 }
+  ],
+  "total": 325.5,
+  "currency": "ZAR"
+}
