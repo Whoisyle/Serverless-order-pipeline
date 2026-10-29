@@ -3,11 +3,11 @@
   <!--
     UNVERIFIED: this project needs NuGet packages, which could not be restored in the
     build environment (api.nuget.org is blocked there). It has not been compiled locally.
-    Package versions below are minimum-version ranges ("[X,)"), not exact pins -- an
-    exact pin that doesn't exist on nuget.org would hard-fail restore, and the exact
-    published versions could not be checked without NuGet access either. CI (which does
-    have real network access) is this project's first real build; if it still fails,
-    run `dotnet build` with `-v normal` to see the actual resolved versions and errors.
+    Package versions below are minimum version ranges ("[X,)"), not exact pins. An exact
+    pin that doesn't exist on nuget.org would hard fail restore, and the exact published
+    versions could not be checked without NuGet access either. CI (which does have real
+    network access) is this project's first real build; if it still fails, run
+    "dotnet build" with "-v normal" to see the actual resolved versions and errors.
   -->
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
