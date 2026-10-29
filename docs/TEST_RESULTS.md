@@ -77,7 +77,32 @@ $ dotnet run --project csharp/OrderPipeline.Tests
 
 This covers the same rules as the Python/TypeScript suites, at a coarser granularity (one test per rule rather than one per invalid field, since there's no parametrize/table-test helper without a framework). Full file: [`test-results/csharp.txt`](test-results/csharp.txt)
 
-**Not covered by any test here:** `csharp/OrderPipeline.Functions` (the actual Azure Functions host). It needs NuGet packages the build environment couldn't reach, so it has never been compiled. CI builds it on every push — check the Actions tab for current status.
+**Not covered by any test here:** `csharp/OrderPipeline.Functions` (the actual Azure Functions host). It needs NuGet packages this build environment couldn't reach, so it was never compiled locally — but CI (which has real NuGet access) builds it on every push, and that build passes. See [Known limits](../README.md#known-limits) for what that does and doesn't prove.
+
+## Dead-letter tool
+
+```
+$ pytest -v
+============================= test session starts ==============================
+collecting ... collected 12 items
+
+tests/test_core.py::test_extract_order_id_from_valid_json_bytes PASSED   [  8%]
+tests/test_core.py::test_extract_order_id_from_valid_json_str PASSED     [ 16%]
+tests/test_core.py::test_extract_order_id_missing_field PASSED           [ 25%]
+tests/test_core.py::test_extract_order_id_non_dict_json PASSED           [ 33%]
+tests/test_core.py::test_extract_order_id_malformed_json PASSED          [ 41%]
+tests/test_core.py::test_extract_order_id_none_body PASSED               [ 50%]
+tests/test_core.py::test_extract_order_id_bad_unicode PASSED             [ 58%]
+tests/test_core.py::test_can_resubmit_with_order_id PASSED               [ 66%]
+tests/test_core.py::test_cannot_resubmit_without_order_id PASSED         [ 75%]
+tests/test_core.py::test_format_table_empty PASSED                       [ 83%]
+tests/test_core.py::test_format_table_has_header_and_row PASSED          [ 91%]
+tests/test_core.py::test_format_table_shows_unknown_for_missing_order_id PASSED [100%]
+
+============================== 12 passed in 0.04s ==============================
+```
+
+Covers `tools/deadletter/core.py` (pure logic) only. `cli.py` (the actual Service Bus calls) has not been run against a live namespace. Full file: [`test-results/deadletter.txt`](test-results/deadletter.txt)
 
 ## Terraform
 
@@ -86,7 +111,13 @@ $ terraform fmt -check -recursive
 (no output — all files already formatted)
 ```
 
-`terraform validate` could not be run in the build environment (the Terraform provider registry was unreachable). CI runs `terraform init` and `terraform validate` on every push against real network access — check the Actions tab for current status.
+`terraform validate` could not be run in this build environment (the Terraform provider registry was unreachable) — but it does run in CI on every push, against the real registry, and currently passes.
+
+## What CI has actually confirmed, and what it hasn't
+
+The first real CI run (after this repository was pushed to GitHub) caught two failures this build environment's sandbox couldn't: `pytest -q` failed in Python because the README's own documented command (bare `pytest`, not `python -m pytest`) doesn't add the current directory to the import path; and the C# Functions host failed to build, first for a missing namespace import, then for a malformed XML comment in its `.csproj`. Both are fixed and CI is green now (5/5 jobs). A closer manual review after that also found and fixed a real correctness issue CI's green checkmark didn't catch: `Order`'s C# properties were PascalCase while the wire format is camelCase, which would have silently deserialized every field to empty in production — System.Text.Json is case-sensitive by default, and the only place that was configured correctly was the test runner itself, which is why "15 tests pass" didn't reveal it.
+
+The takeaway: a green CI run means the code compiles and the unit tests against pure logic pass. It does not mean any of this has been exercised against a real HTTP request, a real Service Bus message, or a real Cosmos DB write — that's a different, larger kind of verification this repository hasn't had yet.
 
 ## Cross-implementation agreement
 

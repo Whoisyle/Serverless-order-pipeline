@@ -25,6 +25,9 @@
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Extensions.ServiceBus" Version="[5.13,)" />
     <PackageReference Include="Microsoft.Azure.Functions.Worker.Sdk" Version="[1.17,)" />
     <PackageReference Include="Azure.Messaging.ServiceBus" Version="[7.17,)" />
+    <!-- Explicit, not relying on Microsoft.Azure.Cosmos's transitive reference: used
+         directly by OrderState's [Newtonsoft.Json.JsonProperty] attributes. -->
+    <PackageReference Include="Newtonsoft.Json" Version="[13.0,)" />
   </ItemGroup>
 
   <ItemGroup>

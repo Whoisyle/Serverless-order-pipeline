@@ -1,0 +1,22 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.18, pytest-9.2.0, pluggy-1.7.0 -- /home/claude/serverless-order-pipeline/tools/deadletter/.venv/bin/python3
+cachedir: .pytest_cache
+rootdir: /home/claude/serverless-order-pipeline/tools/deadletter
+configfile: pyproject.toml
+testpaths: tests
+collecting ... collected 12 items
+
+tests/test_core.py::test_extract_order_id_from_valid_json_bytes PASSED   [  8%]
+tests/test_core.py::test_extract_order_id_from_valid_json_str PASSED     [ 16%]
+tests/test_core.py::test_extract_order_id_missing_field PASSED           [ 25%]
+tests/test_core.py::test_extract_order_id_non_dict_json PASSED           [ 33%]
+tests/test_core.py::test_extract_order_id_malformed_json PASSED          [ 41%]
+tests/test_core.py::test_extract_order_id_none_body PASSED               [ 50%]
+tests/test_core.py::test_extract_order_id_bad_unicode PASSED             [ 58%]
+tests/test_core.py::test_can_resubmit_with_order_id PASSED               [ 66%]
+tests/test_core.py::test_cannot_resubmit_without_order_id PASSED         [ 75%]
+tests/test_core.py::test_format_table_empty PASSED                       [ 83%]
+tests/test_core.py::test_format_table_has_header_and_row PASSED          [ 91%]
+tests/test_core.py::test_format_table_shows_unknown_for_missing_order_id PASSED [100%]
+
+============================== 12 passed in 0.04s ==============================

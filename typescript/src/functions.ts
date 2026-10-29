@@ -64,8 +64,13 @@ async function move(order: Pick<Order, "orderId" | "customerId">, target: string
   try {
     const { resource } = await ordersContainer().item(order.orderId, order.orderId).read();
     if (resource?.status) current = resource.status;
-  } catch {
-    // First write for this order: treat as received.
+  } catch (err) {
+    // Only a genuine "not found" means this is the first write for this order.
+    // Anything else (auth failure, throttling, network error) should fail loudly
+    // rather than being silently treated as a fresh order -- matching Python's
+    // CosmosResourceNotFoundError and C#'s CosmosException/NotFound checks, which
+    // are both specific, not bare catch-alls.
+    if ((err as { code?: number })?.code !== 404) throw err;
   }
   if (current !== target) transition(current, target);
   await save(order, target, reason);
@@ -128,7 +133,16 @@ app.serviceBusTopic("payment", {
       await send("fulfilment", order);
       return;
     }
-    const deliveryCount = context.triggerMetadata?.deliveryCount as number | undefined;
+    // UNVERIFIED: the exact key the Service Bus extension uses in triggerMetadata for
+    // delivery count has not been confirmed against a real deployment (unlike Python's
+    // msg.delivery_count and C#'s message.DeliveryCount, both strongly-typed SDK
+    // properties). Checking both common casings as a hedge. If neither matches, this
+    // falls back to 1 every time -- the retry budget below would never trigger this
+    // code's own dead-letter branch, but Service Bus's own server-side
+    // max_delivery_count (set in Terraform) still dead-letters the message
+    // independently, so this degrades rather than loops forever.
+    const metadata = context.triggerMetadata as Record<string, unknown> | undefined;
+    const deliveryCount = (metadata?.deliveryCount ?? metadata?.DeliveryCount) as number | undefined;
     if (shouldRetryPayment(deliveryCount ?? 1)) {
       await move(order, Status.PaymentFailed, "declined");
       // Throwing makes Service Bus redeliver the message for another attempt.

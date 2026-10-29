@@ -91,11 +91,13 @@ No Azure subscription has been attached to this project yet, so nothing above ha
 | Python implementation | 17 tests pass; Functions app imports cleanly |
 | TypeScript implementation | 17 tests pass; compiles with `tsc` |
 | C# core | 15 tests pass |
-| C# Functions host | Written, **not compiled** — NuGet was unreachable in the build environment |
+| C# Functions host | Builds in CI against real NuGet |
 | Dead-letter tool | 12 tests pass (pure logic); Service Bus I/O **not run against a live namespace** |
 | Architecture diagrams | Generated from Mermaid source in `docs/diagrams/`, not screenshots of a running system — nothing is deployed yet |
-| Terraform | Formatted; **not validated** against the Azure provider — the registry was unreachable in the build environment |
-| CI | Written; not yet run on GitHub |
+| Terraform | Formatted; `terraform validate` passes in CI against the real provider |
+| CI | **All 5 jobs pass** — see the [Actions tab](https://github.com/Whoisyle/serverless-order-pipeline/actions) for current status |
+
+CI is the only point any of this has touched real network access (NuGet, npm, PyPI, the Terraform registry). None of it has been deployed to Azure, triggered by a real Service Bus message, or served a real HTTP request — see [Known limits](#known-limits).
 
 ────────
 

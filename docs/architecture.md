@@ -44,11 +44,13 @@ No connection strings or keys. Function Apps use a system-assigned managed ident
 
 The three implementations share the rules in `contracts/` and must agree on every fixture:
 
-| Language | Core | Functions host | Verified here |
-|---|---|---|---|
-| Python | `python/order_pipeline/core.py` | `python/function_app.py` (v2 model) | 17 tests pass, Functions app imports |
-| TypeScript | `typescript/src/core.ts` | `typescript/src/functions.ts` (v4 model) | 17 tests pass |
-| C# | `csharp/OrderPipeline/Core/OrderRules.cs` | `csharp/OrderPipeline.Functions/` (isolated worker) | 15 tests pass; Functions host **not compiled** (needs NuGet) |
+| Language | Core | Functions host | Verified here | Verified in CI |
+|---|---|---|---|---|
+| Python | `python/order_pipeline/core.py` | `python/function_app.py` (v2 model) | 17 tests pass, lint clean | imports cleanly |
+| TypeScript | `typescript/src/core.ts` | `typescript/src/functions.ts` (v4 model) | 17 tests pass | compiles with `tsc` |
+| C# | `csharp/OrderPipeline/Core/OrderRules.cs` | `csharp/OrderPipeline.Functions/` (isolated worker) | 15 tests pass | builds against real NuGet |
+
+"Verified here" is what's checked by unit tests against pure logic. "Verified in CI" is the first and only point any of this has touched real network access (NuGet, npm, PyPI) — none of it has run against real Azure resources, triggered by a real message, or served a real HTTP request. See [TEST_RESULTS.md](TEST_RESULTS.md) for the actual captured output.
 
 Python and TypeScript both build the same pipeline; C# core tests cover the same rules. Only one implementation needs to be deployed. Choose it with the Terraform `runtime` variable.
 
@@ -62,5 +64,5 @@ Python and TypeScript both build the same pipeline; C# core tests cover the same
 - No alerting on dead-lettered messages yet — the CLI above is for manual/scripted inspection, not automatic notification.
 - Cosmos DB is serverless, single region. Multi-region failover is a separate project.
 - Terraform has not been validated against the Azure provider in this environment (the registry was unreachable). Run `terraform validate` and `terraform plan` before first deploy.
-- Nothing in this repository has been deployed to Azure or run against real cloud resources. All verification so far is unit tests against pure logic — see [TEST_RESULTS.md](TEST_RESULTS.md).
-- Only one implementation is meant to be deployed at a time (`runtime` in Terraform), but each writes its own shape of Cosmos document (`OrderState` in C#, a plain dict in Python, an object literal in TypeScript). C#'s `OrderState` has no explicit JSON casing (unlike `Order`, which does — see below), so if the Cosmos SDK's default serializer doesn't match the camelCase the other two use, switching `runtime` against an existing container without clearing it could read stale fields incorrectly. Not a bug within one deployment, but worth checking before switching implementations against live data.
+- Nothing in this repository has been deployed to Azure or run against real cloud resources. All verification so far is unit tests against pure logic, and (for the Functions hosts) that the code compiles — see [TEST_RESULTS.md](TEST_RESULTS.md).
+- **TypeScript's payment-retry delivery count is unverified.** Python and C# both read it off a strongly-typed SDK property (`msg.delivery_count`, `message.DeliveryCount`). The Node.js v4 model exposes it through the generic `context.triggerMetadata` bag instead, whose exact key casing for the Service Bus extension could not be confirmed without a real deployment or docs access. The code checks both `deliveryCount` and `DeliveryCount` as a hedge; if neither matches, this code's own retry counting defaults to 1 every time, but Service Bus's own server-side `max_delivery_count` (Terraform) still dead-letters the message independently either way — so this degrades the detail in the recorded `reason`, not the actual safety guarantee.

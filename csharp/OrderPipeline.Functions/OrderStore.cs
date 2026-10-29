@@ -54,12 +54,38 @@ public sealed class OrderStore(ServiceBusClient bus, CosmosClient cosmos)
     }
 }
 
+// Both System.Text.Json's [JsonPropertyName] and Newtonsoft.Json's [JsonProperty] are
+// applied to every property. The Microsoft.Azure.Cosmos SDK's default serializer wraps
+// Newtonsoft.Json internally, not System.Text.Json, so a System.Text.Json-only attribute
+// could be silently ignored depending on which serializer is actually in effect -- this
+// could not be confirmed without compiling against the real SDK. Covering both is correct
+// regardless of which one Cosmos uses, and keeps this document's field names camelCase,
+// matching Python's and TypeScript's plain dict/object writes to the same container shape
+// (see docs/architecture.md's Known gaps for why this matters only if `runtime` is
+// switched against existing data).
 public sealed class OrderState
 {
-    [JsonPropertyName("id")] public string Id { get; set; } = "";
+    [JsonPropertyName("id")]
+    [Newtonsoft.Json.JsonProperty("id")]
+    public string Id { get; set; } = "";
+
+    [JsonPropertyName("orderId")]
+    [Newtonsoft.Json.JsonProperty("orderId")]
     public string OrderId { get; set; } = "";
+
+    [JsonPropertyName("customerId")]
+    [Newtonsoft.Json.JsonProperty("customerId")]
     public string CustomerId { get; set; } = "";
+
+    [JsonPropertyName("status")]
+    [Newtonsoft.Json.JsonProperty("status")]
     public string Status { get; set; } = "";
+
+    [JsonPropertyName("reason")]
+    [Newtonsoft.Json.JsonProperty("reason")]
     public string? Reason { get; set; }
+
+    [JsonPropertyName("updatedAt")]
+    [Newtonsoft.Json.JsonProperty("updatedAt")]
     public string UpdatedAt { get; set; } = "";
 }

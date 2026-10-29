@@ -10,103 +10,103 @@ TAP version 13
 # Subtest: valid fixture has no errors
 ok 1 - valid fixture has no errors
   ---
-  duration_ms: 2.536797
+  duration_ms: 2.585106
   type: 'test'
   ...
 # Subtest: total mismatch is reported
 ok 2 - total mismatch is reported
   ---
-  duration_ms: 0.452621
+  duration_ms: 0.437979
   type: 'test'
   ...
 # Subtest: empty items is reported
 ok 3 - empty items is reported
   ---
-  duration_ms: 0.181562
+  duration_ms: 0.225068
   type: 'test'
   ...
 # Subtest: field error: orderId required
 ok 4 - field error: orderId required
   ---
-  duration_ms: 0.356063
+  duration_ms: 0.293846
   type: 'test'
   ...
 # Subtest: field error: customerId required
 ok 5 - field error: customerId required
   ---
-  duration_ms: 0.258629
+  duration_ms: 0.307654
   type: 'test'
   ...
 # Subtest: field error: currency format
 ok 6 - field error: currency format
   ---
-  duration_ms: 0.262273
+  duration_ms: 0.158222
   type: 'test'
   ...
 # Subtest: field error: total type
 ok 7 - field error: total type
   ---
-  duration_ms: 0.23695
+  duration_ms: 0.207699
   type: 'test'
   ...
 # Subtest: field error: quantity >= 1
 ok 8 - field error: quantity >= 1
   ---
-  duration_ms: 0.154783
+  duration_ms: 0.148135
   type: 'test'
   ...
 # Subtest: field error: quantity not bool
 ok 9 - field error: quantity not bool
   ---
-  duration_ms: 0.346276
+  duration_ms: 0.42044
   type: 'test'
   ...
 # Subtest: field error: unitPrice >= 0
 ok 10 - field error: unitPrice >= 0
   ---
-  duration_ms: 0.43567
+  duration_ms: 0.421892
   type: 'test'
   ...
 # Subtest: field error: sku required
 ok 11 - field error: sku required
   ---
-  duration_ms: 0.201432
+  duration_ms: 0.265964
   type: 'test'
   ...
 # Subtest: non-object order rejected
 ok 12 - non-object order rejected
   ---
-  duration_ms: 0.204927
+  duration_ms: 0.280799
   type: 'test'
   ...
 # Subtest: computeTotal rounds to cents
 ok 13 - computeTotal rounds to cents
   ---
-  duration_ms: 0.147696
+  duration_ms: 0.138526
   type: 'test'
   ...
 # Subtest: valid transitions
 ok 14 - valid transitions
   ---
-  duration_ms: 0.128606
+  duration_ms: 0.123308
   type: 'test'
   ...
 # Subtest: invalid transition throws
 ok 15 - invalid transition throws
   ---
-  duration_ms: 0.356879
+  duration_ms: 0.424647
   type: 'test'
   ...
 # Subtest: payment policy
 ok 16 - payment policy
   ---
-  duration_ms: 0.091949
+  duration_ms: 0.104828
   type: 'test'
   ...
 # Subtest: retry budget
 ok 17 - retry budget
   ---
-  duration_ms: 0.081935
+  duration_ms: 0.09216
   type: 'test'
   ...
 1..17
@@ -117,4 +117,4 @@ ok 17 - retry budget
 # cancelled 0
 # skipped 0
 # todo 0
-# duration_ms 119.269287
+# duration_ms 111.623681
