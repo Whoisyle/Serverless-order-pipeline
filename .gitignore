@@ -4,19 +4,42 @@ __pycache__/
 .venv/
 .pytest_cache/
 .ruff_cache/
+*.egg-info/
+
 # Node
 node_modules/
 dist/
+*.tsbuildinfo
+npm-debug.log*
+
 # .NET
 bin/
 obj/
+*.user
+.vs/
+
 # Terraform
 .terraform/
+.terraform.lock.hcl
 *.tfstate
 *.tfstate.*
 crash.log
 terraform.tfvars
-# Azure Functions local settings (may hold secrets)
+*.tfplan
+
+# Azure Functions local settings (may hold secrets) and storage emulator state
 local.settings.json
-# OS
+.azurite/
+__azurite_db*__.json
+
+# Secrets and environment files
+.env
+.env.*
+*.pfx
+*.pem
+
+# Editors and OS
 .DS_Store
+Thumbs.db
+.idea/
+*.swp
