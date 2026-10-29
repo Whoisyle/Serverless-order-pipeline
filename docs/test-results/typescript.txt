@@ -1,0 +1,120 @@
+
+> order-pipeline@0.1.0 test
+> npm run build && node --test dist/test/core.test.js
+
+
+> order-pipeline@0.1.0 build
+> tsc -p tsconfig.json
+
+TAP version 13
+# Subtest: valid fixture has no errors
+ok 1 - valid fixture has no errors
+  ---
+  duration_ms: 2.3235
+  type: 'test'
+  ...
+# Subtest: total mismatch is reported
+ok 2 - total mismatch is reported
+  ---
+  duration_ms: 0.383716
+  type: 'test'
+  ...
+# Subtest: empty items is reported
+ok 3 - empty items is reported
+  ---
+  duration_ms: 0.173938
+  type: 'test'
+  ...
+# Subtest: field error: orderId required
+ok 4 - field error: orderId required
+  ---
+  duration_ms: 0.375051
+  type: 'test'
+  ...
+# Subtest: field error: customerId required
+ok 5 - field error: customerId required
+  ---
+  duration_ms: 0.261099
+  type: 'test'
+  ...
+# Subtest: field error: currency format
+ok 6 - field error: currency format
+  ---
+  duration_ms: 0.15359
+  type: 'test'
+  ...
+# Subtest: field error: total type
+ok 7 - field error: total type
+  ---
+  duration_ms: 0.209415
+  type: 'test'
+  ...
+# Subtest: field error: quantity >= 1
+ok 8 - field error: quantity >= 1
+  ---
+  duration_ms: 0.204443
+  type: 'test'
+  ...
+# Subtest: field error: quantity not bool
+ok 9 - field error: quantity not bool
+  ---
+  duration_ms: 0.354402
+  type: 'test'
+  ...
+# Subtest: field error: unitPrice >= 0
+ok 10 - field error: unitPrice >= 0
+  ---
+  duration_ms: 0.449715
+  type: 'test'
+  ...
+# Subtest: field error: sku required
+ok 11 - field error: sku required
+  ---
+  duration_ms: 0.214767
+  type: 'test'
+  ...
+# Subtest: non-object order rejected
+ok 12 - non-object order rejected
+  ---
+  duration_ms: 0.191986
+  type: 'test'
+  ...
+# Subtest: computeTotal rounds to cents
+ok 13 - computeTotal rounds to cents
+  ---
+  duration_ms: 0.119979
+  type: 'test'
+  ...
+# Subtest: valid transitions
+ok 14 - valid transitions
+  ---
+  duration_ms: 0.117036
+  type: 'test'
+  ...
+# Subtest: invalid transition throws
+ok 15 - invalid transition throws
+  ---
+  duration_ms: 0.475636
+  type: 'test'
+  ...
+# Subtest: payment policy
+ok 16 - payment policy
+  ---
+  duration_ms: 0.142569
+  type: 'test'
+  ...
+# Subtest: retry budget
+ok 17 - retry budget
+  ---
+  duration_ms: 0.093922
+  type: 'test'
+  ...
+1..17
+# tests 17
+# suites 0
+# pass 17
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 119.456039

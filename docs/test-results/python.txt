@@ -1,0 +1,25 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.18, pytest-9.2.0, pluggy-1.7.0 -- /home/claude/serverless-order-pipeline/python/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/claude/serverless-order-pipeline/python
+collecting ... collected 17 items
+
+tests/test_core.py::test_valid_fixture_has_no_errors PASSED              [  5%]
+tests/test_core.py::test_total_mismatch_is_reported PASSED               [ 11%]
+tests/test_core.py::test_empty_items_is_reported PASSED                  [ 17%]
+tests/test_core.py::test_field_errors[<lambda>-orderId is required] PASSED [ 23%]
+tests/test_core.py::test_field_errors[<lambda>-customerId is required] PASSED [ 29%]
+tests/test_core.py::test_field_errors[<lambda>-currency must be a 3-letter uppercase code] PASSED [ 35%]
+tests/test_core.py::test_field_errors[<lambda>-total must be a number >= 0] PASSED [ 41%]
+tests/test_core.py::test_field_errors[<lambda>-items[0].quantity must be an integer >= 1_0] PASSED [ 47%]
+tests/test_core.py::test_field_errors[<lambda>-items[0].quantity must be an integer >= 1_1] PASSED [ 52%]
+tests/test_core.py::test_field_errors[<lambda>-items[0].unitPrice must be a number >= 0] PASSED [ 58%]
+tests/test_core.py::test_field_errors[<lambda>-items[0].sku is required] PASSED [ 64%]
+tests/test_core.py::test_non_object_order_rejected PASSED                [ 70%]
+tests/test_core.py::test_compute_total_rounds_to_cents PASSED            [ 76%]
+tests/test_core.py::test_valid_transitions PASSED                        [ 82%]
+tests/test_core.py::test_invalid_transition_raises PASSED                [ 88%]
+tests/test_core.py::test_payment_policy PASSED                           [ 94%]
+tests/test_core.py::test_retry_budget PASSED                             [100%]
+
+============================== 17 passed in 0.06s ==============================

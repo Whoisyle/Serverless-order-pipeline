@@ -1,0 +1,42 @@
+sequenceDiagram
+    autonumber
+    participant C as Client
+    participant I as intake (HTTP)
+    participant SB1 as Service Bus<br/>topic: orders
+    participant V as validation
+    participant SB2 as Service Bus<br/>topic: payments
+    participant P as payment
+    participant SB3 as Service Bus<br/>topic: fulfilment
+    participant F as fulfilment
+    participant DB as Cosmos DB<br/>(orders container)
+    participant DLQ as Dead-letter queue
+
+    C->>I: POST /api/orders
+    I->>DB: upsert status=received
+    I->>SB1: publish order
+    I-->>C: 202 Accepted
+
+    SB1->>V: deliver (sub: validation)
+    alt invalid payload
+        V->>DB: upsert status=rejected (reason)
+    else no orderId (malformed)
+        V->>V: log + drop (not retried)
+    else valid
+        V->>DB: upsert status=validated
+        V->>SB2: publish order
+    end
+
+    SB2->>P: deliver (sub: payment)
+    alt payment authorised
+        P->>DB: upsert status=paid
+        P->>SB3: publish order
+    else declined, attempts < 3
+        P->>DB: upsert status=payment_failed
+        P->>SB2: throw -> redelivered
+    else declined, attempts = 3
+        P->>DB: upsert status=dead_lettered
+        P->>DLQ: Service Bus moves message
+    end
+
+    SB3->>F: deliver (sub: fulfilment)
+    F->>DB: upsert status=fulfilled

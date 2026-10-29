@@ -1,0 +1,12 @@
+stateDiagram-v2
+    [*] --> received: intake accepts request
+    received --> validated: validation passes
+    received --> rejected: validation fails
+    validated --> paid: payment authorised
+    validated --> payment_failed: payment declined
+    payment_failed --> paid: retry succeeds
+    payment_failed --> dead_lettered: retry budget exhausted (3 attempts)
+    paid --> fulfilled: fulfilment completes
+    rejected --> [*]
+    fulfilled --> [*]
+    dead_lettered --> [*]

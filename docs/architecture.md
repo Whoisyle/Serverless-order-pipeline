@@ -1,23 +1,16 @@
 # Architecture
 
+> Diagrams in this document are generated from the `.mmd` source files in [`diagrams/`](diagrams/) with the Mermaid CLI (`mmdc`) — they're renderings of the design, not screenshots of a running system. Nothing in this project is deployed to Azure yet; see [Status](../README.md#status) in the README for what's actually been verified.
+
 ## Flow
 
-```
-client ──POST /api/orders──▶ [intake] ──▶ Service Bus topic "orders"
-                                              │ subscription "validation"
-                                              ▼
-                                         [validation] ──▶ topic "payments"
-                                              │ subscription "payment"
-                                              ▼
-                                          [payment] ──▶ topic "fulfilment"
-                                              │ subscription "fulfilment"
-                                              ▼
-                                         [fulfilment]
+![Message flow sequence diagram](diagrams/message-flow.png)
 
-Every stage writes order state to Cosmos DB (container "orders", partition key /orderId).
-```
+Every stage writes order state to Cosmos DB (container `orders`, partition key `/orderId`). Source: [`diagrams/message-flow.mmd`](diagrams/message-flow.mmd).
 
 ## Order states
+
+![Order state machine](diagrams/state-machine.png)
 
 | From | To | When |
 |---|---|---|
@@ -30,7 +23,7 @@ Every stage writes order state to Cosmos DB (container "orders", partition key /
 | `payment_failed` | `dead_lettered` | retry budget exhausted |
 | `paid` | `fulfilled` | fulfilment completes |
 
-Illegal transitions raise an error in every implementation, so a message redelivered after a crash cannot move an order backwards.
+Illegal transitions raise an error in every implementation, so a message redelivered after a crash cannot move an order backwards. Source: [`diagrams/state-machine.mmd`](diagrams/state-machine.mmd).
 
 ## Failure handling
 
@@ -59,9 +52,14 @@ The three implementations share the rules in `contracts/` and must agree on ever
 
 Python and TypeScript both build the same pipeline; C# core tests cover the same rules. Only one implementation needs to be deployed. Choose it with the Terraform `runtime` variable.
 
+## Dead-letter tooling
+
+`tools/deadletter/` lists and reprocesses dead-lettered messages across all three Service Bus subscriptions (`validation`, `payment`, `fulfilment`) — see its [README](../tools/deadletter/README.md). Its pure logic (summarising a dead-lettered message, deciding whether it's safe to resubmit) has 12 passing unit tests; the actual Service Bus calls have not been run against a live namespace, since none exists yet.
+
 ## Known gaps (v1)
 
 - Payment is simulated (`PAYMENT_LIMIT`). No real payment provider.
-- No dead-letter processing or alerting yet; dead-lettered messages must be inspected manually.
+- No alerting on dead-lettered messages yet — the CLI above is for manual/scripted inspection, not automatic notification.
 - Cosmos DB is serverless, single region. Multi-region failover is a separate project.
 - Terraform has not been validated against the Azure provider in this environment (the registry was unreachable). Run `terraform validate` and `terraform plan` before first deploy.
+- Nothing in this repository has been deployed to Azure or run against real cloud resources. All verification so far is unit tests against pure logic — see [TEST_RESULTS.md](TEST_RESULTS.md).
